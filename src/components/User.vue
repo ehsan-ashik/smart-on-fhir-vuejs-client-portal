@@ -1,12 +1,15 @@
 <template>
 	<div :id="user.id" class="flex justify-between items-center px-6 py-2 bg-white">
-		<div v-show="user.active">
+		<div>
 			<h3 class="inline-block font-normal text-xl pb-2 uppercase">
 				{{ user.prefix }} {{ user.firstName }} {{ user.lastName }}
 			</h3>
 			<!-- <span class="text-xl pl-4">{{ user.gender }}</span> -->
-			<p class="text-xs font-normal italic text-blue-800 pb-1">
+			<p v-if="user.email" class="text-xs font-normal italic text-blue-800 pb-1">
 				<span class="font-bold text-slate-700 not-italic">Email:</span> {{ user.email }}
+			</p>
+			<p v-if="user.phone" class="text-xs font-normal italic text-blue-800 pb-1">
+				<span class="font-bold text-slate-700 not-italic">Phone:</span> {{ user.phone }}
 			</p>
 			<p class="text-xs font-normal"><span class="font-bold">Address:</span> {{ user.address }}</p>
 		</div>
