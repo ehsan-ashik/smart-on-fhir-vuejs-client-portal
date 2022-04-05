@@ -18,7 +18,7 @@
 	</div>
 	<ul class="flex flex-col divide-y">
 		<li v-for="pt in patients" :key="pt.id">
-			<User :user="pt" type="practitioner" />
+			<User :user="pt" type="patient" />
 		</li>
 	</ul>
 </template>

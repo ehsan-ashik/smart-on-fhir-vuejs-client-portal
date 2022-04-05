@@ -2,6 +2,7 @@ import { createRouter, createWebHistory } from 'vue-router'
 import PractitionerView from '../views/PractitionerView.vue'
 import PatientView from '../views/PatientView'
 import PractitionerDetailView from '../views/PractitionerDetailView'
+import PatientDetailView from '../views/PatientDetailView'
 
 const routes = [
 	{
@@ -21,6 +22,12 @@ const routes = [
 		path: '/practitioner/:id',
 		name: 'practitioner',
 		component: PractitionerDetailView,
+		props: true,
+	},
+	{
+		path: '/patient/:id',
+		name: 'patient',
+		component: PatientDetailView,
 		props: true,
 	},
 ]
