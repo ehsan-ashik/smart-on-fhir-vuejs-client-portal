@@ -3,8 +3,8 @@
 </template>
 
 <script>
-import PractitionerObj from '../models/Practitioner'
-import UserDetail from '../components/UserDetail.vue'
+import PractitionerObj from '../models/Practitioner';
+import UserDetail from '../components/UserDetail.vue';
 export default {
 	name: 'practitionerDetail',
 	props: ['id'],
@@ -14,22 +14,27 @@ export default {
 	data() {
 		return {
 			practitioner: {},
-		}
+		};
 	},
 	methods: {
 		async getPractitioner() {
-			const raw = await fetch(`http://localhost:5000/fhir/Practitioner/${this.id}`)
-			const data = await raw.json()
-			//console.log(data)
-			let newPt = new PractitionerObj()
-			newPt.generatePractitioner(data)
-			this.practitioner = newPt
+			const raw = await fetch(`${localStorage.uri}/Practitioner/${this.id}`, {
+				headers: {
+					'Content-Type': 'application/fhir+json',
+					Authorization: localStorage.token != undefined ? 'Bearer ' + localStorage.token : '',
+				},
+			});
+			const data = await raw.json();
+
+			let newPt = new PractitionerObj();
+			newPt.generatePractitioner(data);
+			this.practitioner = newPt;
 		},
 	},
 	async mounted() {
-		await this.getPractitioner()
+		await this.getPractitioner();
 	},
-}
+};
 </script>
 
 <style></style>

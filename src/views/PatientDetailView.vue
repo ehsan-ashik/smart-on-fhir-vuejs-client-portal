@@ -18,13 +18,6 @@
 			>
 				Observations
 			</button>
-			<!-- <button
-			:class="views[currentViewID - 1].name == 'medications' ? 'bg-slate-400/60' : ''"
-			@click="viewMedications"
-			class="bg-slate-400/20 hover:bg-slate-400/40 px-6 py-2 rounded active:bg-slate-400/60"
-		>
-			Medicaions
-		</button> -->
 		</div>
 		<div v-if="views[currentViewID - 1].name == 'details'">
 			<UserDetail :user="patient" />
@@ -49,17 +42,6 @@
 						<td class="px-2 py-1">{{ row.obsValue.unit }}</td>
 					</tr>
 				</table>
-				<!-- <table class="charts-css column hide-data">
-				<tr class="">
-					<th class="">Date</th>
-					<th class="">Value</th>
-				</tr>
-
-				<tr class="" v-for="row in getFilteredObservation(code)" :key="row.id">
-					<td scope="row" class="">{{ row.dateText }}</td>
-					<td style="--size: calc(20 / 100)" class="">{{ row.obsValue.value }}</td>
-				</tr>
-			</table> -->
 			</div>
 		</div>
 		<div v-if="views[currentViewID - 1].name == 'medications'">Medications View</div>
@@ -67,9 +49,9 @@
 </template>
 
 <script>
-import PatientObj from '../models/Patient'
-import PatientObservationObj from '../models/PatientObservation'
-import UserDetail from '../components/UserDetail.vue'
+import PatientObj from '../models/Patient';
+import PatientObservationObj from '../models/PatientObservation';
+import UserDetail from '../components/UserDetail.vue';
 
 export default {
 	name: 'patientDetail',
@@ -90,7 +72,7 @@ export default {
 				{ id: 3, name: 'medications' },
 			],
 			currentViewID: 2,
-		}
+		};
 	},
 	computed: {},
 	methods: {
@@ -98,57 +80,61 @@ export default {
 			return this.observations
 				.filter((x) => x.obsCode.display == code)
 				.sort(function (a, b) {
-					return a.effectiveDate.getTime() - b.effectiveDate.getTime()
-				})
+					return a.effectiveDate.getTime() - b.effectiveDate.getTime();
+				});
 		},
 		async getPatient() {
-			const raw = await fetch(`http://localhost:5000/fhir/Patient/${this.id}`)
+			const raw = await fetch(`${localStorage.uri}/Patient/${this.id}`, {
+				headers: {
+					'Content-Type': 'application/fhir+json',
+					Authorization: localStorage.token != undefined ? 'Bearer ' + localStorage.token : '',
+				},
+			});
 
-			const data = await raw.json()
+			const data = await raw.json();
 
-			let ptObj = new PatientObj()
-			ptObj.generatePatient(data)
+			let ptObj = new PatientObj();
+			ptObj.generatePatient(data);
 
-			this.patient = ptObj
+			this.patient = ptObj;
 		},
 		async getPatientObservations() {
-			const raw = await fetch(` http://localhost:5000/fhir/Observation?patient=${this.id}&_count=1000`)
+			const raw = await fetch(`${localStorage.uri}/Observation?patient=${this.id}&_count=1000`, {
+				headers: {
+					'Content-Type': 'application/fhir+json',
+					Authorization: localStorage.token != undefined ? 'Bearer ' + localStorage.token : '',
+				},
+			});
 
-			const data = await raw.json()
-			//console.log(data)
+			const data = await raw.json();
 			data.entry.forEach((obs) => {
-				const newObs = new PatientObservationObj()
-				newObs.generate(obs.resource)
-				this.observations.push(newObs)
-			})
+				const newObs = new PatientObservationObj();
+				newObs.generate(obs.resource);
+				this.observations.push(newObs);
+			});
 
-			this.observationCategories = [...new Set(this.observations.map((obs) => obs.category))]
-			//console.log(this.observationCategories)
+			this.observationCategories = [...new Set(this.observations.map((obs) => obs.category))];
 
 			this.observationCodes = [
 				...new Set(this.observations.filter((x) => x.obsValue.value != -1).map((obs) => obs.obsCode.display)),
-			]
-
-			// this.observationCodes.forEach((code) => {
-			// 	console.log(code, this.observations.filter((x) => x.obsCode.display == code).length)
-			// })
+			];
 		},
 		viewDetails() {
-			this.currentViewID = 1
+			this.currentViewID = 1;
 		},
 		viewObservations() {
-			this.currentViewID = 2
+			this.currentViewID = 2;
 		},
 		viewMedications() {
-			this.currentViewID = 3
+			this.currentViewID = 3;
 		},
 	},
 	async created() {
-		await this.getPatient()
-		await this.getPatientObservations()
-		this.loading = false
+		await this.getPatient();
+		await this.getPatientObservations();
+		this.loading = false;
 	},
-}
+};
 </script>
 
 <style></style>

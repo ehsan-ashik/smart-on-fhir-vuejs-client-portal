@@ -11,7 +11,7 @@
 		<button
 			:disabled="!nextPage"
 			@click="ProcessNextPage"
-			class="px-6 py-2 text-sm rounded bg-slate-500/20 hover:bg-slate-500/40"
+			class="px-6 py-2 text-sm rounded bg-slate-500/20 hover:bg-slate-500/40 disabled:bg-slate-500/10 disabled:opacity-50"
 		>
 			Next
 		</button>
@@ -24,8 +24,8 @@
 </template>
 
 <script>
-import User from '../components/User.vue'
-import PatientObj from '../models/Patient'
+import User from '../components/User.vue';
+import PatientObj from '../models/Patient';
 
 export default {
 	name: 'patient',
@@ -37,83 +37,99 @@ export default {
 			prevPage: '',
 			patientCount: 0,
 			currentPage: 1,
-		}
+		};
 	},
 	methods: {
 		async getPatients() {
-			const raw = await fetch(`http://localhost:5000/fhir/Patient`)
-			const data = await raw.json()
-			//console.log(data)
-			this.patientCount = data.total
+			const raw = await fetch(`${localStorage.uri}/Patient?_count=18`, {
+				headers: {
+					'Content-Type': 'application/fhir+json',
+					Authorization: localStorage.token != undefined ? 'Bearer ' + localStorage.token : '',
+				},
+			});
+
+			const data = await raw.json();
+
+			this.patientCount = data.total;
 
 			//set next page link
-			const nextLink = data.link.filter((link) => link.relation == 'next')
-			this.nextPage = nextLink.length > 0 ? nextLink[0].url : ''
+			const nextLink = data.link.filter((link) => link.relation == 'next');
+			this.nextPage = nextLink.length > 0 ? nextLink[0].url : '';
 
 			//set prev page link
-			const prevlink = data.link.filter((link) => link.relation == 'previous')
-			this.prevPage = prevlink.length > 0 ? prevlink[0].url : ''
+			const prevlink = data.link.filter((link) => link.relation == 'previous');
+			this.prevPage = prevlink.length > 0 ? prevlink[0].url : '';
 
 			data.entry.forEach((pt) => {
 				if (pt.resource.name) {
-					let newPt = new PatientObj()
-					newPt.generatePatient(pt.resource)
-					this.patients.push(newPt)
+					let newPt = new PatientObj();
+					newPt.generatePatient(pt.resource);
+					this.patients.push(newPt);
 				}
-			})
+			});
 		},
 
 		async ProcessNextPage() {
-			if (!this.nextPage) return
+			if (!this.nextPage) return;
 
-			const raw = await fetch(this.nextPage)
-			const data = await raw.json()
+			const raw = await fetch(this.nextPage, {
+				headers: {
+					'Content-Type': 'application/fhir+json',
+					Authorization: localStorage.token != undefined ? 'Bearer ' + localStorage.token : '',
+				},
+			});
+			const data = await raw.json();
 
 			//set next page link
-			const nextLink = data.link.filter((link) => link.relation == 'next')
-			this.nextPage = nextLink.length > 0 ? nextLink[0].url : ''
+			const nextLink = data.link.filter((link) => link.relation == 'next');
+			this.nextPage = nextLink.length > 0 ? nextLink[0].url : '';
 
 			//set prev page link
-			const prevlink = data.link.filter((link) => link.relation == 'previous')
-			this.prevPage = prevlink.length > 0 ? prevlink[0].url : ''
+			const prevlink = data.link.filter((link) => link.relation == 'previous');
+			this.prevPage = prevlink.length > 0 ? prevlink[0].url : '';
 
-			this.patients = []
+			this.patients = [];
 			data.entry.forEach((pt) => {
 				if (pt.resource.name) {
-					let newPt = new PatientObj()
-					newPt.generatePatient(pt.resource)
-					this.patients.push(newPt)
+					let newPt = new PatientObj();
+					newPt.generatePatient(pt.resource);
+					this.patients.push(newPt);
 				}
-			})
-			this.currentPage++
+			});
+			this.currentPage++;
 		},
 		async ProcessPrevPage() {
-			if (!this.prevPage) return
+			if (!this.prevPage) return;
 
-			const raw = await fetch(this.prevPage)
-			const data = await raw.json()
+			const raw = await fetch(this.prevPage, {
+				headers: {
+					'Content-Type': 'application/fhir+json',
+					Authorization: localStorage.token != undefined ? 'Bearer ' + localStorage.token : '',
+				},
+			});
+			const data = await raw.json();
 
 			//set next page link
-			const nextLink = data.link.filter((link) => link.relation == 'next')
-			this.nextPage = nextLink.length > 0 ? nextLink[0].url : ''
+			const nextLink = data.link.filter((link) => link.relation == 'next');
+			this.nextPage = nextLink.length > 0 ? nextLink[0].url : '';
 
 			//set prev page link
-			const prevlink = data.link.filter((link) => link.relation == 'previous')
-			this.prevPage = prevlink.length > 0 ? prevlink[0].url : ''
+			const prevlink = data.link.filter((link) => link.relation == 'previous');
+			this.prevPage = prevlink.length > 0 ? prevlink[0].url : '';
 
-			this.patients = []
+			this.patients = [];
 			data.entry.forEach((pt) => {
 				if (pt.resource.name) {
-					let newPt = new PatientObj()
-					newPt.generatePatient(pt.resource)
-					this.patients.push(newPt)
+					let newPt = new PatientObj();
+					newPt.generatePatient(pt.resource);
+					this.patients.push(newPt);
 				}
-			})
-			this.currentPage--
+			});
+			this.currentPage--;
 		},
 	},
 	async mounted() {
-		await this.getPatients()
+		await this.getPatients();
 	},
-}
+};
 </script>
