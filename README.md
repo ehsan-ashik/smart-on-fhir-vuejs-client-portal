@@ -1,7 +1,7 @@
 # Smart on FHIR Client Portal (v. 0.1.0)
 
 
-The app is developed as part of CSE 5810 course project with the target to get familiar with FHIR specification. The app generates and shows data from multiple FHIR resources, such as *Practitioner*, *Patient*, *Patient Observations* etc. On the FHIR backend, the app uses **Logica EHR sandbox**, with proper auth mechanism implemented.
+The project was developed with the target to get familiar with FHIR specification. The app generates and shows data from multiple FHIR resources, such as *Practitioner*, *Patient*, *Patient Observations* etc. On the FHIR backend, the app uses **Logica EHR sandbox**, with proper auth mechanism implemented.
 
 ## Features
 1. Client level Access token-based auth mechanism for Logica server.
